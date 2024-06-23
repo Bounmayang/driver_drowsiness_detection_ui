@@ -5,13 +5,18 @@ import { FaRegUser } from "react-icons/fa";
 import { MdLogout } from "react-icons/md";
 const Header = () => {
     const navigate = useNavigate()
-    const accessUser = true;
+    const accessUser =  JSON.parse(localStorage.getItem("userInfo"))
     const [openProfile, setOpenProfile] = useState(false)
     const location = useLocation();
     const active= location.pathname
+    const handleLogout = () => {
+        localStorage.removeItem("userInfo")
+        navigate('/')
+    }
     const handleToAdmin = () => {
         navigate('/admin');
     }
+    console.log('accessUser:::',accessUser)
   return (
     <div className='flex  items-center justify-between bg-[var(--main-color)] px-[8%] py-6 z-20'>
         <div>
@@ -26,14 +31,14 @@ const Header = () => {
             {accessUser ? 
             ( <div className='flex flex-row gap-3 items-end text-white relative cursor-pointer' onClick={() => setOpenProfile(!openProfile)}>
                 <FaRegCircleUser  size={30} color='white'/>
-                <h4>User Name</h4>
+                <h4>{accessUser?.user?.fullname}</h4>
                {openProfile && (
                    <div className='absolute w-[10rem] top-12 right-0 bg-white text-black flex flex-col shadow-md rounded-md'>
-                      <div className='w-full flex gap-2 hover:bg-[var(--main-color)] hover:text-white p-4' onClick={handleToAdmin}>
+                      {accessUser?.user?.role === "admin" && <div className='w-full flex gap-2 hover:bg-[var(--main-color)] hover:text-white p-4' onClick={handleToAdmin}>
                           <FaRegUser size={18}/> <p>to Admin</p>
-                      </div>
-                      <div className='w-full flex gap-2 hover:bg-[var(--main-color)] hover:text-white p-4'>
-                      <MdLogout  size={18}/> <p>Logout</p>
+                      </div>}
+                      <div className='w-full flex gap-2 hover:bg-[var(--main-color)] hover:text-white p-4' onClick={handleLogout}>
+                      <MdLogout  size={18} /> <p>Logout</p>
                       </div>
                    </div>
                )}
@@ -65,9 +70,4 @@ const navData = [
         name:'My logs',
         link:'/mylogs'
     },
-    {
-        id:3,
-        name:'Log in',
-        link:'/login'
-    }
 ]

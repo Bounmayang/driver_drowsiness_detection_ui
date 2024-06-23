@@ -1,32 +1,57 @@
-
+import { useState,useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Formik } from "formik";
 import InputField from "../component/InputField";
-import { successSwal } from "../helper";
+import { successSwal ,errorSwal} from "../helper";
+import axios from "axios";
+import { APILINK } from "../constant";
 
 const Login = () => {
+  const accessUser =  JSON.parse(localStorage.getItem("userInfo"))
+  const [isLoading,setIsLoading] = useState(false)
   const navigate = useNavigate();
-  const handleLogin = (values) => {
-    console.log("values:::", values);
-    successSwal("Login Success");
-    navigate("/");
+
+useEffect(() => {
+  if(accessUser){
+    navigate("/")
+  }
+}, [])
+
+
+  const handleLogin = async (values) => {
+    const newdata = {
+      phonenumber: values.phoneNumber,
+      password: values.password
+    }
+    setIsLoading(true)
+    try{
+      const response = await axios.post(`${APILINK}/user/login`, newdata);
+    if(response.status === 200) {
+      console.log("response:::", response.data.data);
+      localStorage.setItem("userInfo", JSON.stringify(response.data.data));
+      successSwal("Login Success");
+      navigate("/");
+    }
+    }
+    catch(err){
+      errorSwal("Login Failed");
+    }finally{
+      setIsLoading(false)
+    }
+    
   }
   return (
     <>
       <div className="grid place-items-center w-full min-h-screen bg-[#F6F6F6]">
         <Formik
           initialValues={{
-            email: "",
+            phoneNumber: "",
             password: "",
           }}
           validate={(values) => {
             const errors = {};
-            if (!values.email) {
-              errors.email = "Required email";
-            } else if (
-              !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-            ) {
-              errors.email = "Invalid email address";
+            if(!values.phoneNumber){
+              errors.phoneNumber = "Required phoneNumber"
             }
             if (!values.password) {
               errors.password = "Required password";
@@ -35,9 +60,7 @@ const Login = () => {
           }}
           onSubmit={(values) => {
             console.log("send Data:::", values);
-            if (values.email && values.password) {
-              handleLogin(values);
-            }
+           handleLogin(values);
           }}
         >
           {({
@@ -60,13 +83,13 @@ const Login = () => {
               </p>
               <div className="w-full">
               <InputField
-                id="email"
-                name="email"
-                type="email"
-                placeholder="Email Address"
-                value={values.email}
-                errors={errors.email}
-                touched={touched.email}
+                id="phoneNumber"
+                name="phoneNumber"
+                type="text"
+                placeholder="99655454"
+                value={values.phoneNumber}
+                errors={errors.phoneNumber}
+                touched={touched.phoneNumber}
                 onChange={handleChange}
                 onBlur={handleBlur}
               />
@@ -84,7 +107,7 @@ const Login = () => {
                 onBlur={handleBlur}
               />
              </div>
-              <button className="px-10 mt-5 py-4 w-full rounded-lg bg-[var(--main-color)] text-white text-base font-medium shadow-md hover:shadow-lg hover:scale-95 duration-100">Login</button>
+              <button className="px-10 mt-5 py-4 w-full rounded-lg bg-[var(--main-color)] text-white text-base font-medium shadow-md hover:shadow-lg hover:scale-95 duration-100">{isLoading ? "Loading..." : "Login"}</button>
               <div className="flex items-center">
                  <p>Not Account ?</p> <Link className=" ml-3 text-[var(--main-color)] underline text-base" to={"/register"}>Register here</Link>
               </div>

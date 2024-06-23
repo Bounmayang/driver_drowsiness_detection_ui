@@ -79,7 +79,7 @@ InputField.propTypes = {
   id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   icon: PropTypes.element,
-  type: PropTypes.string,
+  type: PropTypes.string || PropTypes.number,
   placeholder: PropTypes.string,
   value: PropTypes.string,
   disabled: PropTypes.bool,

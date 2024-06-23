@@ -1,6 +1,14 @@
 
-
+import { useEffect } from "react"
 const Detect = () => {
+  const accessUser =  JSON.parse(localStorage.getItem("userInfo"))
+
+
+  useEffect(() => {
+     if(!accessUser){
+       window.location.href = "/login"
+     }
+  }, [])
   return (
     <div className="w-full grid place-items-center h-screen">
          <div className="w-[50%]  flex flex-col gap-4 items-center justify-center border-dashed border-2 border-[var(--main-color)] min-h-[50vh] rounded-md">

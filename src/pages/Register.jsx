@@ -3,14 +3,36 @@ import { Link, useNavigate } from "react-router-dom";
 import { Formik } from "formik";
 import InputField from "../component/InputField";
 import { successSwal } from "../helper";
-
+import axios from "axios";
+import { APILINK } from "../constant";
+import { useState } from "react";
 const Register = () => {
   const navigate = useNavigate();
-  const handleLogin = (values) => {
-    console.log("values:::", values);
-    successSwal("Register Success");
-    navigate("/");
+  const [isLoading,setIsLoading] = useState(false)
+  const   handleRegister = (values) => {
+    const newdata = {
+      fullname: values.userName,
+      email: values.email,
+      phonenumber: values.phonenumber,
+      password: values.password,
+      lastname: values.lastname
+
+    }
+    console.log("newdata:::",newdata)
+    try{
+      setIsLoading(true)
+      const response = axios.post(`${APILINK}/user/register`, newdata);
+      if(response) {
+        console.log("response:::", response.data.data);
+        successSwal("Register Success");
+        navigate("/login");
+      }
+    }catch(err){
+      console.log(err)
+  }finally{
+    setIsLoading(false)
   }
+}
   return (
     <>
       <div className="grid place-items-center w-full min-h-screen bg-[#F6F6F6]">
@@ -18,12 +40,20 @@ const Register = () => {
           initialValues={{
             userName: "",
             email: "",
+            phonenumber:"",
             password: "",
+            lastname:""
           }}
           validate={(values) => {
             const errors = {};
             if(!values.userName){
               errors.userName = "Required Name"
+            }
+            if(!values.phonenumber){
+              errors.phonenumber = "Required Phone Number"
+            }
+            if(!values.lastname){
+              errors.lastname = "Required Last Name"
             }
             if (!values.email) {
               errors.email = "Required email";
@@ -38,7 +68,7 @@ const Register = () => {
             return errors;
           }}
           onSubmit={(values) => {
-              handleLogin(values);
+              handleRegister(values)
             
           }}
         >
@@ -65,10 +95,36 @@ const Register = () => {
                 id="userName"
                 name="userName"
                 type="text"
-                placeholder="Your Name"
+                placeholder="first name"
                 value={values.userName}
                 errors={errors.userName}
                 touched={touched.userName}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+              </div>
+              <div className="w-full">
+              <InputField
+                id="lastname"
+                name="lastname"
+                type="text"
+                placeholder="last name"
+                value={values.lastname}
+                errors={errors.lastname}
+                touched={touched.lastname}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+              </div>
+              <div className="w-full">
+              <InputField
+                id="phonenumber"
+                name="phonenumber"
+                type="text"
+                placeholder="phone Number"
+                value={values.phonenumber}
+                errors={errors.phonenumber}
+                touched={touched.phonenumber}
                 onChange={handleChange}
                 onBlur={handleBlur}
               />
@@ -99,7 +155,7 @@ const Register = () => {
                 onBlur={handleBlur}
               />
              </div>
-              <button className="px-10 mt-5 py-4 w-full rounded-lg bg-[var(--main-color)] text-white text-base font-medium shadow-md hover:shadow-lg hover:scale-95 duration-100">Register</button>
+              <button type="submit" className="px-10 mt-5 py-4 w-full rounded-lg bg-[var(--main-color)] text-white text-base font-medium shadow-md hover:shadow-lg hover:scale-95 duration-100">{isLoading ? "Loading..." : "Register"}</button>
               <div className="flex items-center">
                  <p>Already have Account ?</p> <Link className=" ml-3 text-[var(--main-color)] underline text-base" to={"/login"}>login here</Link>
               </div>

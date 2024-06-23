@@ -1,9 +1,38 @@
+import axios from "axios";
 import CustomTable from "../component/CustomTable"
 import InputField from "../component/InputField"
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { APILINK } from "../constant";
 const Mylogs = () => {
-    // const [search, setSearch] = useState("")
-    const [date, setDate] = useState("")
+
+   const [date, setDate] = useState("")
+   const [myLogs, setMylogs] = useState([])
+   const [isLoading, setIsLoading] = useState(false)
+   const accessUser =  JSON.parse(localStorage.getItem("userInfo"))
+   
+   useEffect(() => {
+      if(!accessUser){
+         window.location.href = "/login"
+      }
+      getMylogs();
+   },[])
+
+   const getMylogs = async () => {
+    setIsLoading(true)
+    try{
+      const response = await axios.get(`${APILINK}/user/log/${accessUser?.user?.id}`,{headers: {Authorization: `Bearer ${accessUser?.token}`}})
+      if(response.status === 200) {
+        setMylogs(response.data.data)
+        console.log(response.data.data)
+      }
+    }catch(err){
+      console.log(err)
+    }finally{
+      setIsLoading(false)
+    }
+   }
+  
+
 
   return (
     <div className="w-full px-[8%] py-10">
@@ -24,21 +53,25 @@ const Mylogs = () => {
             </div>
         </div>
         <div className="mt-6">
+           {isLoading? <div className="text-center grid place-items-center h-[30rem] w-full">
+              <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-[var(--main-color)]"></div>
+           </div>: 
             <CustomTable header={userData?.header}>
-            {userData?.users?.map((user, index) => (
+            {myLogs?.map((user, index) => (
               <tr
                 key={index}
               >
                 <td>{index + 1}</td>
-                <td>{user.member_Id}</td>
-                <td>{user.staff_name}</td>
-                <td>{user.membership_plan}</td>
-                <td>{user.membership_plan}</td>
-                <td>{user.membership_plan}</td>
-                <td>{user.membership_status}</td>
+                <td>{user.username}</td>
+                <td>{user.lastname}</td>
+                <td>{user.email}</td>
+                <td>{user.phonenumber}</td>
+                <td>{user.score}</td>
+                <td>{user.dateTime}</td>
               </tr>
             ))}
           </CustomTable>
+          }
         </div>
 
     </div>
@@ -51,50 +84,13 @@ export default Mylogs
 const userData = {
     header: [
       "NO",
-      "Member ID",
-      "Staff Name",
-      "Membership Plan",
-      "Membership Rank",
-      "Level",
-      "Membership Status",
+      "userName",
+      "LastName",
+      "email",
+      "phoneNumber",
+      "score",
+      "dateTime",
     ],
-    users: [
-      {
-        id: 1,
-        member_Id: "5951754567844",
-        staff_name: "Yuki Nakayama",
-        membership_plan: "Coporate Member",
-        membership_rank: "platinum",
-        membership_level: "PA",
-        membership_status: "Temporairy Member",
-      },
-      {
-        id: 1,
-        member_Id: "5951754567844",
-        staff_name: "Yuki Nakayama",
-        membership_plan: "Coporate Member",
-        membership_rank: "platinum",
-        membership_level: "PA",
-        membership_status: "Temporairy Member",
-      },
-      {
-        id: 1,
-        member_Id: "5951754567844",
-        staff_name: "Yuki Nakayama",
-        membership_plan: "Coporate Member",
-        membership_rank: "platinum",
-        membership_level: "PA",
-        membership_status: "Temporairy Member",
-      },
-      {
-        id: 1,
-        member_Id: "5951754567844",
-        staff_name: "Yuki Nakayama",
-        membership_plan: "Coporate Member",
-        membership_rank: "platinum",
-        membership_level: "PA",
-        membership_status: "Temporairy Member",
-      },
-    ],
+    
   };
   
