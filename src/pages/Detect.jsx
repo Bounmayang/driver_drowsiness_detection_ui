@@ -20,4 +20,6 @@ const Detect = () => {
   )
 }
 
-export default Detect
+export default Detect;
+
+
