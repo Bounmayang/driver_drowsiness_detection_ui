@@ -1,15 +1,19 @@
 import axios from "axios";
-import CustomTable from "../component/CustomTable"
-import InputField from "../component/InputField"
+import CustomTable from "../../component/CustomTable"
+import InputField from "../../component/InputField"
 import { useEffect, useState } from "react";
-import { APILINK } from "../constant";
-const Mylogs = () => {
+import { APILINK } from "../../constant";
+import { useParams } from "react-router-dom";
 
+const UserDetail = () => {
+   const {id} = useParams();
    const [date, setDate] = useState("")
    const [myLogs, setMylogs] = useState([])
    const [isLoading, setIsLoading] = useState(false)
    const accessUser =  JSON.parse(localStorage.getItem("userInfo"))
    
+
+   console.log('id:::::>',id)
    useEffect(() => {
       if(!accessUser){
          window.location.href = "/login"
@@ -19,8 +23,11 @@ const Mylogs = () => {
 
    const getMylogs = async () => {
     setIsLoading(true)
+    const config = {
+      headers: {Authorization: `Bearer ${accessUser?.token}`}
+    }
     try{
-      const response = await axios.get(`${APILINK}/user/log/${accessUser?.user?.id}`,{headers: {Authorization: `Bearer ${accessUser?.token}`}})
+      const response = await axios.get(`${APILINK}/user/log/${id}`,config)
       if(response.status === 200) {
         setMylogs(response.data.data)
         console.log(response.data.data)
@@ -78,7 +85,7 @@ const Mylogs = () => {
   )
 }
 
-export default Mylogs
+export default UserDetail
 
 
 const userData = {

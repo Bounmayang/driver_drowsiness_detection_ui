@@ -8,6 +8,7 @@ import NotFound from "../pages/NotFound"
 import Detect from "../pages/Detect"
 import Mylogs from "../pages/Mylogs"
 import UserList from "../pages/admin/UserList"
+import UserDetail from "../pages/admin/UerLogs"
 
  const AllRoute = () => {
   return (
@@ -20,6 +21,7 @@ import UserList from "../pages/admin/UserList"
          <Route path="/mylogs" element={<Layout><Mylogs/></Layout>}></Route>
          <Route path="/*" element={<Layout><NotFound/></Layout>}></Route>
          <Route path="/admin" element={<Layout><UserList/></Layout>}></Route>
+         <Route path="/admin/users/:id" element={<Layout><UserDetail/></Layout>}></Route>
        </Routes>
     </Router>
   )
