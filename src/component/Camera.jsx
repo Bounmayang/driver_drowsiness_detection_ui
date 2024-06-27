@@ -1,9 +1,10 @@
 import  { useRef, useEffect, useState } from "react";
 import axios from "axios";
-
+import { APILINK } from "../constant";
 const Camera = () => {
   const videoRef = useRef(null);
   const [results, setResults] = useState([]);
+  const accessUser = JSON.parse(localStorage.getItem("userInfo"));
 
   useEffect(() => {
     if (videoRef.current) {
@@ -29,12 +30,13 @@ const Camera = () => {
         formData.append("file", blob, "frame.jpg");
 
         try {
-          const response = await axios.post("http://localhost:8000/user/predict-eye-state", formData, {
+          const response = await axios.post(`${APILINK}/user/detect`, formData, {
             headers: {
               "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${accessUser?.token}`,
             },
           });
-            console.log('res:::',response.data);
+          console.log("response:", response.data);
         } catch (error) {
           console.error("Error sending image:", error);
         }
@@ -43,13 +45,12 @@ const Camera = () => {
   };
 
   useEffect(() => {
-    const interval = setInterval(captureFrame, 4000);
+    const interval = setInterval(captureFrame, 5000);
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div className=" w-full">
-      <h1>Realtime Face Recognition</h1>
       <video ref={videoRef} style={{ width: "100%" }} />
     </div>
   );
